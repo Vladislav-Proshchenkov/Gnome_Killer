@@ -2,7 +2,12 @@ version: 1.0.{build}
 image: Visual Studio 2022
 environment:
   nodejs_version: "18"
-  CI: true
+  GITHUB_TOKEN:
+    secure: ENCRYPTED_GITHUB_TOKEN
+
+cache:
+  - node_modules
+  - '%APPDATA%\npm-cache'
 
 install:
   - ps: Install-Product node $env:nodejs_version
@@ -12,23 +17,21 @@ install:
 build_script:
   - npm run build
 
+on_success:
+  - git config --global user.email "appveyor@example.com"
+  - git config --global user.name "AppVeyor CI"
+  - ps: |
+      # Создаем файл с credentials
+      $credentialPath = "$env:USERPROFILE\.git-credentials"
+      "https://$($env:GITHUB_TOKEN):x-oauth-basic@github.com" | Out-File -FilePath $credentialPath -Encoding ascii
+      git config --global credential.helper store
+  - npm run deploy
+
 artifacts:
   - path: dist
     name: distribution
 
-on_success:
-  - git config --global credential.helper store
-  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_token):x-oauth-basic@github.com`n"
-  - git config --global user.email "you@example.com"
-  - git config --global user.name "Your Name"
-  - npm run deploy
-
-deploy:
-  provider: GitHub
-  description: 'Automatic deploy to GitHub Pages'
-  auth_token:
-    secure: YOUR_ENCRYPTED_GITHUB_TOKEN
-  on:
-    branch: main
-  skip_cleanup: true
-  draft: false
+skip_commits:
+  files:
+    - '**/*.md'
+    - '**/.gitignore'
