@@ -1,4 +1,4 @@
-appveyor.yml
+
 # Файлы зависимостей
 node_modules/
 npm-debug.log
