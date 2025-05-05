@@ -3,7 +3,7 @@ image: Visual Studio 2022
 environment:
   nodejs_version: "18"
   GITHUB_TOKEN:
-    secure: ENCRYPTED_GITHUB_TOKEN
+    secure: {GITHUB_TOKEN}
 
 cache:
   - node_modules
