@@ -5,33 +5,24 @@ environment:
   GITHUB_TOKEN:
     secure: ${GITHUB_TOKEN}
 
-cache:
-  - node_modules
-  - '%APPDATA%\npm-cache'
-
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm install
-  - npm install -g gh-pages@latest
+  - npm ci
 
 build_script:
   - npm run build
 
 on_success:
   - git config --global user.email "appveyor@example.com"
-  - git config --global user.name "AppVeyor CI"
+  - git config --global user.name "AppVeyor"
+  
   - ps: |
-      # Создаем файл с credentials
       $credentialPath = "$env:USERPROFILE\.git-credentials"
       "https://$($env:GITHUB_TOKEN):x-oauth-basic@github.com" | Out-File -FilePath $credentialPath -Encoding ascii
       git config --global credential.helper store
+  
   - npm run deploy
 
 artifacts:
   - path: dist
     name: distribution
-
-skip_commits:
-  files:
-    - '**/*.md'
-    - '**/.gitignore'
