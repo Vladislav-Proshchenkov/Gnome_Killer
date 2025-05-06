@@ -8,13 +8,14 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm ci
+  - npm install gh-pages --save-dev
 
 build_script:
   - npm run build
 
 on_success:
   - git config --global user.email "appveyor@example.com"
-  - git config --global user.name "AppVeyor"
+  - git config --global user.name "AppVeyor CI"
   
   - ps: |
       $credentialPath = "$env:USERPROFILE\.git-credentials"
