@@ -18,11 +18,12 @@ on_success:
   - git config --global user.name "AppVeyor CI"
   
   - ps: |
-      $credentialPath = "$env:USERPROFILE\.git-credentials"
-      "https://$($env:GITHUB_TOKEN):x-oauth-basic@github.com" | Out-File -FilePath $credentialPath -Encoding ascii
-      git config --global credential.helper store
-  
-  - npm run deploy
+      $repoUrl = "https://$($env:GITHUB_TOKEN)@github.com/Vladislav-Proshchenkov/Gnome_Killer.git"
+      cd dist
+      git init
+      git add .
+      git commit -m "Auto-deploy [skip ci]"
+      git push --force --quiet $repoUrl master:gh-pages
 
 artifacts:
   - path: dist
